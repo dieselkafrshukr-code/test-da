@@ -37,10 +37,12 @@ body {
 
 /* Navbar */
 .glass-nav {
-    background: rgba(11, 15, 25, 0.85);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1rem 0;
+    background: rgba(11, 15, 25, 0.95);
+    /* Little less transparent for better readability */
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 0;
+    /* Reduced padding */
     transition: all 0.3s;
 }
 
@@ -48,6 +50,8 @@ body {
     font-weight: 600;
     color: rgba(255, 255, 255, 0.7) !important;
     transition: color 0.3s;
+    font-size: 0.95rem;
+    margin: 0 5px;
 }
 
 .nav-link:hover,
@@ -61,6 +65,30 @@ body {
 
 .tracking-wide {
     letter-spacing: 1px;
+}
+
+/* Auth Button Fix */
+.btn-google-login {
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-google-login:hover {
+    background: #f1f1f1;
+    transform: translateY(-1px);
+}
+
+.cart-btn-wrapper {
+    position: relative;
+    margin-left: 10px;
 }
 
 /* Hero Section */
