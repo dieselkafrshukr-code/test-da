@@ -1,201 +1,289 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl" data-bs-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Fager Store - متجر الفاجر</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <title>El Fager - متجر الفاجر للأجهزة الإلكترونية</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap RTL 5.3 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Libraries -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Header -->
-    <header class="main-header glass-effect">
-        <div class="container header-container">
-            <div class="logo">
-                <i class="fa-solid fa-bolt"></i>
-                <h1>El Fager</h1>
-            </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top glass-nav">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="fa-solid fa-bolt text-warning fa-xl"></i>
+                <span class="fw-black tracking-wide">EL FAGER</span>
+            </a>
 
-            <nav class="main-nav">
-                <a href="#home" class="active">الرئيسية</a>
-                <a href="#products">المنتجات</a>
-                <a href="#offers">العروض</a>
-            </nav>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <i class="fa-solid fa-bars-staggered text-white"></i>
+            </button>
 
-            <div class="header-actions">
-                <!-- Theme Toggle -->
-                <button id="themeToggle" class="icon-btn">
-                    <i class="fa-solid fa-sun"></i>
-                </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="#home">الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#products">المنتجات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#categories">الأقسام</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">اتصل بنا</a></li>
+                </ul>
 
-                <!-- Cart Icon -->
-                <div class="cart-icon" onclick="toggleCart()">
-                    <i class="fa-solid fa-shopping-bag"></i>
-                    <span id="cartBadge" class="cart-badge">0</span>
-                </div>
-
-                <!-- Auth Section -->
-                <div id="authSection">
-                    <button class="btn-login" onclick="loginWithGoogle()">
-                        <i class="fa-brands fa-google"></i> دخول
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-icon position-relative" onclick="toggleCart()">
+                        <i class="fa-solid fa-shopping-bag fa-lg"></i>
+                        <span id="cartBadge"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                     </button>
-                </div>
 
-                <!-- User Profile (Hidden initially) -->
-                <div id="userProfile" class="user-profile hidden">
-                    <img id="userAvatar" src="" alt="User">
-                    <button onclick="logout()" class="btn-logout"><i class="fa-solid fa-sign-out-alt"></i></button>
+                    <div id="authSection">
+                        <button class="btn btn-primary btn-glow rounded-pill px-4" onclick="loginWithGoogle()">
+                            <i class="fa-brands fa-google me-2"></i> دخول
+                        </button>
+                    </div>
+
+                    <div id="userProfile" class="d-none align-items-center gap-2">
+                        <img id="userAvatar" src="" class="rounded-circle border border-2 border-warning" width="40"
+                            height="40">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-white dropdown-toggle text-decoration-none" type="button"
+                                data-bs-toggle="dropdown">
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i
+                                            class="fa-solid fa-sign-out-alt me-2"></i> خروج</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Swiper -->
+    <header id="home" class="hero-section position-relative overflow-hidden">
+        <div class="swiper heroSwiper">
+            <div class="swiper-wrapper">
+
+                <!-- Slide 1 -->
+                <div class="swiper-slide">
+                    <div class="hero-bg"
+                        style="background-image: url('https://images.unsplash.com/photo-1550009158-9ebf69173e03?q=80&w=2001&auto=format&fit=crop');">
+                    </div>
+                    <div class="overlay"></div>
+                    <div class="container h-100 d-flex align-items-center position-relative z-2">
+                        <div class="row w-100">
+                            <div class="col-lg-7" data-aos="fade-up">
+                                <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold">خصومات
+                                    حصرية 🔥</span>
+                                <h1 class="display-1 fw-black text-white mb-4">أقوى العروض <br> <span
+                                        class="text-gradient">على الإلكترونيات</span></h1>
+                                <p class="lead text-white-50 mb-5">اكتشف عالم التكنولوجيا الحديثة مع El Fager. أفضل
+                                    المنتجات بأسعار لا تقبل المنافسة مع ضمان حقيقي.</p>
+                                <div class="d-flex gap-3">
+                                    <a href="#products" class="btn btn-primary btn-lg rounded-pill px-5 btn-glow">تسوق
+                                        الآن</a>
+                                    <a href="#contact" class="btn btn-outline-light btn-lg rounded-pill px-5">تواصل
+                                        معنا</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="swiper-slide">
+                    <div class="hero-bg"
+                        style="background-image: url('https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?q=80&w=1932&auto=format&fit=crop');">
+                    </div>
+                    <div class="overlay"></div>
+                    <div class="container h-100 d-flex align-items-center position-relative z-2">
+                        <div class="row w-100">
+                            <div class="col-lg-7" data-aos="fade-up">
+                                <span class="badge bg-info text-dark mb-3 px-3 py-2 rounded-pill fw-bold">جديد 2024
+                                    🚀</span>
+                                <h1 class="display-1 fw-black text-white mb-4">لابتوبات <br> <span
+                                        class="text-gradient">الجيمنج الخارقة</span></h1>
+                                <p class="lead text-white-50 mb-5">أداء عالي وسرعة فائقة لتجربة لعب وتصميم لا مثيل لها.
+                                </p>
+                                <div class="d-flex gap-3">
+                                    <a href="#products"
+                                        class="btn btn-primary btn-lg rounded-pill px-5 btn-glow">استعراض الأجهزة</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="swiper-pagination"></div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="hero-content">
-            <span class="badge-new">وصل حديثاً 🔥</span>
-            <h1>التكنولوجيا بين يديك <br> <span class="highlight">بأفضل الأسعار</span></h1>
-            <p>تسوق أحدث الهواتف الذكية والإكسسوارات الأصلية مع ضمان حقيقي وخدمة ما بعد البيع المميزة.</p>
-            <div class="hero-btns">
-                <a href="#products" class="btn-primary pulse-effect">تصفح المنتجات <i
-                        class="fa-solid fa-arrow-left"></i></a>
-                <a href="#contact" class="btn-secondary">تواصل معنا</a>
+    <!-- Categories -->
+    <section id="categories" class="py-5">
+        <div class="container py-5">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="category-card p-4 rounded-4 text-center glass-card">
+                        <i class="fa-solid fa-mobile-screen-button fa-3x text-warning mb-3"></i>
+                        <h4 class="fw-bold">هواتف ذكية</h4>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="category-card p-4 rounded-4 text-center glass-card">
+                        <i class="fa-solid fa-laptop fa-3x text-info mb-3"></i>
+                        <h4 class="fw-bold">لابتوبات</h4>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="category-card p-4 rounded-4 text-center glass-card">
+                        <i class="fa-solid fa-headphones-simple fa-3x text-success mb-3"></i>
+                        <h4 class="fw-bold">اكسسوارات</h4>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="hero-image">
-            <!-- Decorative Elements -->
-            <div class="circle-bg"></div>
-            <img src="https://assets.stickpng.com/images/5cb0633d80f2cf201a4c3253.png" alt="iPhone 14 Pro"
-                class="floating-img">
         </div>
     </section>
 
     <!-- Products Section -->
-    <section id="products" class="products-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">منتجاتنا المميزة</h2>
-                <div class="filters">
-                    <button class="filter-btn active">الكل</button>
-                    <button class="filter-btn">ايفون</button>
-                    <button class="filter-btn">سامسونج</button>
-                    <button class="filter-btn">اكسسوارات</button>
+    <section id="products" class="py-5 bg-darker position-relative">
+        <div class="container py-5">
+            <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-right">
+                <div>
+                    <h6 class="text-warning fw-bold uppercase ls-2">تسوق معنا</h6>
+                    <h2 class="display-4 fw-bold text-white">منتجاتنا المميزة</h2>
                 </div>
+                <a href="#" class="btn btn-outline-light rounded-pill px-4">عرض الكل <i
+                        class="fa-solid fa-arrow-left ms-2"></i></a>
             </div>
 
-            <!-- Dynamic Products Container -->
-            <div id="products-grid" class="products-grid">
-                <div class="loading-placeholder">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <p>جاري تحميل المنتجات...</p>
+            <!-- Dynamic Grid -->
+            <div id="products-grid" class="row g-4">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-warning" role="status"></div>
+                    <p class="mt-3 text-white-50">جاري جلب أحدث المنتجات...</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Shopping Cart Sidebar -->
-    <div id="cartSidebar" class="cart-sidebar">
-        <div class="cart-header">
-            <h3>سلة المشتريات <span id="cartCount">(0)</span></h3>
-            <button onclick="toggleCart()" class="close-btn"><i class="fa-solid fa-times"></i></button>
+    <!-- Cart Offcanvas (Bootstrap) -->
+    <div class="offcanvas offcanvas-start bg-dark text-white border-end border-secondary" tabindex="-1"
+        id="cartOffcanvas">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title fw-bold"><i class="fa-solid fa-shopping-cart text-warning me-2"></i> سلة
+                المشتريات</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
-
-        <div id="cartItems" class="cart-items">
-            <!-- Items injected here by JS -->
-            <div class="empty-cart-msg">
-                <i class="fa-solid fa-shopping-basket"></i>
-                <p>السلة فارغة حالياً</p>
-                <button onclick="toggleCart()" class="btn-secondary">تصفح المنتجات</button>
+        <div class="offcanvas-body d-flex flex-column p-0">
+            <div id="cartItems" class="flex-grow-1 p-3 overflow-auto">
+                <!-- Cart Items -->
             </div>
-        </div>
-
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>المجموع:</span>
-                <span id="cartTotal">0 EGP</span>
+            <div class="p-4 border-top border-secondary bg-darker">
+                <div class="d-flex justify-content-between mb-3 fs-5 fw-bold">
+                    <span>الإجمالي:</span>
+                    <span id="cartTotal" class="text-warning">0 EGP</span>
+                </div>
+                <button onclick="checkout()" class="btn btn-warning w-100 py-3 rounded-3 fw-bold btn-glow text-dark">
+                    إتمام الشراء <i class="fa-solid fa-check-circle ms-2"></i>
+                </button>
             </div>
-            <button onclick="checkout()" class="btn-checkout">إتمام الطلب <i
-                    class="fa-solid fa-credit-card"></i></button>
         </div>
     </div>
-    <div id="cartOverlay" class="cart-overlay" onclick="toggleCart()"></div>
 
     <!-- Payment Modal -->
-    <div id="paymentModal" class="modal hidden">
-        <div class="modal-content glass-effect">
-            <div class="modal-header">
-                <h3>إتمام الدفع</h3>
-                <button onclick="closeModal('paymentModal')" class="close-btn"><i
-                        class="fa-solid fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="paymentForm">
-                    <label>طريقة الدفع</label>
-                    <div class="payment-methods">
-                        <div class="payment-option selected" onclick="selectPayment('card')">
-                            <i class="fa-brands fa-cc-visa"></i>
-                            <span>بطاقة بنكية</span>
-                        </div>
-                        <div class="payment-option" onclick="selectPayment('cod')">
-                            <i class="fa-solid fa-money-bill-wave"></i>
-                            <span>دفع عند الاستلام</span>
-                        </div>
-                    </div>
-
-                    <div id="cardDetails" class="card-details">
-                        <div class="input-group">
-                            <label>رقم البطاقة</label>
-                            <input type="text" placeholder="0000 0000 0000 0000">
-                        </div>
-                        <div class="row">
-                            <div class="input-group">
-                                <label>تاريخ الانتهاء</label>
-                                <input type="text" placeholder="MM/YY">
-                            </div>
-                            <div class="input-group">
-                                <label>CVV</label>
-                                <input type="text" placeholder="123">
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-0 text-white">
+                <div class="modal-header border-secondary">
+                    <h1 class="modal-title fs-5 fw-bold">تأكيد الطلب</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="paymentForm">
+                        <div class="mb-4">
+                            <label class="form-label text-white-50">طريقة الدفع</label>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="payment" id="pay-card" value="card"
+                                        checked>
+                                    <label
+                                        class="btn btn-outline-secondary w-100 p-3 h-100 d-flex flex-column align-items-center gap-2"
+                                        for="pay-card">
+                                        <i class="fa-brands fa-cc-visa fa-2x"></i>
+                                        <span>بطاقة</span>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="payment" id="pay-cod" value="cod">
+                                    <label
+                                        class="btn btn-outline-secondary w-100 p-3 h-100 d-flex flex-column align-items-center gap-2"
+                                        for="pay-cod">
+                                        <i class="fa-solid fa-money-bill-wave fa-2x"></i>
+                                        <span>عند الاستلام</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="input-group">
-                        <label>رقم الهاتف</label>
-                        <input type="tel" id="userPhone" placeholder="01xxxxxxxxx" required>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">رقم الهاتف</label>
+                            <input type="tel" class="form-control bg-dark border-secondary text-white" id="userPhone"
+                                required placeholder="01xxxxxxxxx">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">العنوان بالتفصيل</label>
+                            <textarea class="form-control bg-dark border-secondary text-white" id="userAddress" rows="2"
+                                required placeholder="المنطقة، الشارع، رقم العمارة..."></textarea>
+                        </div>
 
-                    <div class="input-group">
-                        <label>العنوان</label>
-                        <input type="text" id="userAddress" placeholder="المدينة، الشارع..." required>
-                    </div>
-
-                    <button type="submit" class="btn-pay">تأكيد الدفع (<span id="payAmount">0</span>)</button>
-                </form>
+                        <button type="submit" class="btn btn-primary w-100 py-3 mt-2 fw-bold">تأكيد الدفع (<span
+                                id="payAmount">0</span>)</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <h2>El Fager</h2>
-                    <p>وجهتك الأولى للإلكترونيات في مصر</p>
-                </div>
-                <div class="social-links">
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
+    <footer class="bg-black text-white pt-5 pb-3 border-top border-secondary">
+        <div class="container text-center">
+            <h2 class="fw-black mb-3">EL FAGER</h2>
+            <p class="text-white-50 mb-4">الوجهة رقم 1 للإلكترونيات في مصر</p>
+            <div class="d-flex justify-content-center gap-4 mb-4">
+                <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="social-btn"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
-            <p class="copyright">جميع الحقوق محفوظة &copy; 2024</p>
+            <p class="small text-white-50">&copy; 2024 El Fager Store. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script type="module" src="js/main.js"></script>
 </body>

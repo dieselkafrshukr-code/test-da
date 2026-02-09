@@ -1,42 +1,51 @@
 import { db, collection, getDocs, googleProvider, auth, signInWithPopup, signOut, onAuthStateChanged, addDoc, serverTimestamp } from './firebase-config.js';
 
-console.log('Client Website Initialized');
+// Initialize Libraries
+AOS.init({
+    duration: 800,
+    once: true,
+    offset: 100
+});
+
+// Initialize Swiper
+const swiper = new Swiper(".heroSwiper", {
+    effect: "fade",
+    autoplay: { delay: 5000, disableOnInteraction: false },
+    pagination: { el: ".swiper-pagination", clickable: true },
+    loop: true
+});
 
 // STATE
 let cart = [];
 let currentUser = null;
+let bsOffcanvas = null; // Bootstrap Offcanvas Instance
 
-// DOM ELEMENTS
-const cartBadge = document.getElementById('cartBadge');
-const cartCount = document.getElementById('cartCount');
-const cartItemsContainer = document.getElementById('cartItems');
-const cartTotalEl = document.getElementById('cartTotal');
-const cartSidebar = document.getElementById('cartSidebar');
-const cartOverlay = document.getElementById('cartOverlay');
+// --- AUTH LOGIC ---
 const authSection = document.getElementById('authSection');
 const userProfile = document.getElementById('userProfile');
 const userAvatar = document.getElementById('userAvatar');
-const themeToggle = document.getElementById('themeToggle');
 
-// --- THEME LOGIC ---
-themeToggle.addEventListener('click', () => {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', newTheme);
-
-    // Update Icon
-    themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (user) {
+        authSection.classList.add('d-none');
+        userProfile.classList.remove('d-none');
+        userProfile.classList.add('d-flex');
+        userAvatar.src = user.photoURL || 'https://ui-avatars.com/api/?name=' + user.displayName;
+    } else {
+        authSection.classList.remove('d-none');
+        userProfile.classList.add('d-none');
+        userProfile.classList.remove('d-flex');
+    }
 });
 
-// --- AUTH LOGIC ---
 window.loginWithGoogle = async () => {
     try {
-        const result = await signInWithPopup(auth, googleProvider);
-        console.log('User logged in:', result.user);
+        await signInWithPopup(auth, googleProvider);
+        Toastify({ text: "تم تسجيل الدخول بنجاح! 👋", duration: 3000, gravity: "top", position: "center", style: { background: "linear-gradient(to right, #00b09b, #96c93d)" } }).showToast();
     } catch (error) {
-        console.error('Login Failed', error);
-        alert('فشل تسجيل الدخول: ' + error.message);
+        console.error(error);
+        Toastify({ text: "فشل تسجيل الدخول", duration: 3000, style: { background: "#ff5f6d" } }).showToast();
     }
 };
 
@@ -45,207 +54,175 @@ window.logout = async () => {
     window.location.reload();
 };
 
-onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-        authSection.classList.add('hidden');
-        userProfile.classList.remove('hidden');
-        userAvatar.src = user.photoURL;
-    } else {
-        authSection.classList.remove('hidden');
-        userProfile.classList.add('hidden');
-    }
-});
-
-// --- PRODUCT LOGIC ---
-async function loadProducts() {
+// --- PRODUCTS ---
+document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('products-grid');
 
-    try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+    // Initialize Bootstrap Offcanvas
+    bsOffcanvas = new bootstrap.Offcanvas(document.getElementById('cartOffcanvas'));
 
-        if (querySnapshot.empty) {
-            grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                    <i class="fa-solid fa-box-open fa-3x" style="color: var(--text-secondary); margin-bottom: 1rem;"></i>
-                    <p>لا توجد منتجات متاحة حالياً.</p>
-                </div>
-            `;
+    try {
+        const snapshot = await getDocs(collection(db, "products"));
+
+        if (snapshot.empty) {
+            grid.innerHTML = '<div class="col-12 text-center text-white-50 p-5"><h4>لا توجد منتجات حالياً</h4></div>';
             return;
         }
 
-        grid.innerHTML = ''; // Clear loading
+        grid.innerHTML = '';
+        snapshot.forEach(doc => {
+            const p = doc.data();
+            p.id = doc.id;
 
-        querySnapshot.forEach((doc) => {
-            const product = doc.data();
-            product.id = doc.id; // Store ID for cart
-
-            const productHTML = `
+            grid.innerHTML += `
+            <div class="col-lg-3 col-md-4 col-sm-6" data-aos="fade-up">
                 <div class="product-card">
-                    <div class="product-image">
-                       ${product.image ? `<img src="${product.image}" alt="${product.name}">` : '<i class="fa-solid fa-image fa-3x" style="color: var(--text-secondary)"></i>'}
+                    <span class="badge bg-danger product-badge">New</span>
+                    <div class="product-img-wrapper">
+                         ${p.image ? `<img src="${p.image}" alt="${p.name}">` : '<i class="fa-solid fa-image fa-3x text-secondary"></i>'}
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <span class="product-price">EGP ${product.price}</span>
-                        <button class="btn-add-cart" onclick='addToCart(${JSON.stringify(product).replace(/'/g, "&#39;")})'>
-                            <i class="fa-solid fa-cart-plus"></i> أضف للسلة
-                        </button>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <h5 class="fw-bold mb-1">${p.name}</h5>
+                        <p class="small text-white-50 mb-2">القسم: إلكترونيات</p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <h5 class="text-white mb-0 fw-bold">${p.price} <small class="fs-6 text-white-50">EGP</small></h5>
+                            <button class="btn btn-primary rounded-circle shadow-sm" style="width:40px;height:40px" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
             `;
-            grid.innerHTML += productHTML;
         });
 
     } catch (error) {
-        console.error("Error getting products: ", error);
-        grid.innerHTML = '<p class="loading-placeholder" style="color: var(--danger);">حدث خطأ في تحميل المنتجات.</p>';
+        console.error(error);
+        grid.innerHTML = '<div class="text-danger text-center w-100">فشل تحميل المنتجات</div>';
     }
-}
+});
 
-// --- CART LOGIC ---
+// --- CART ---
+window.toggleCart = () => bsOffcanvas.show();
+
 window.addToCart = (product) => {
-    const existingItem = cart.find(item => item.id === product.id);
-    if (existingItem) {
-        existingItem.qty++;
-    } else {
-        cart.push({ ...product, qty: 1 });
-    }
+    const exists = cart.find(x => x.id === product.id);
+    if (exists) exists.qty++;
+    else cart.push({ ...product, qty: 1 });
+
     updateCartUI();
-    toggleCart(true); // Open sidebar
+    bsOffcanvas.show();
+    Toastify({ text: "تمت الإضافة للسلة 🛒", duration: 2000, position: "left", style: { background: "#4f46e5" } }).showToast();
 };
 
 window.removeFromCart = (id) => {
-    cart = cart.filter(item => item.id !== id);
+    cart = cart.filter(x => x.id !== id);
     updateCartUI();
 };
 
-window.updateQty = (id, change) => {
-    const item = cart.find(item => item.id === id);
+window.updateQty = (id, delta) => {
+    const item = cart.find(x => x.id === id);
     if (item) {
-        item.qty += change;
-        if (item.qty <= 0) window.removeFromCart(id);
+        item.qty += delta;
+        if (item.qty <= 0) removeFromCart(id);
         else updateCartUI();
     }
 };
 
 function updateCartUI() {
-    // Update Counts & Total
-    const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
-    const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+    const container = document.getElementById('cartItems');
+    const totalEl = document.getElementById('cartTotal');
+    const badge = document.getElementById('cartBadge');
 
-    cartBadge.innerText = totalQty;
-    cartCount.innerText = `(${totalQty})`;
-    cartTotalEl.innerText = `${totalPrice.toLocaleString()} EGP`;
-    document.getElementById('payAmount').innerText = `${totalPrice.toLocaleString()} EGP`;
+    const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+    const count = cart.reduce((acc, item) => acc + item.qty, 0);
 
-    // Render Items
+    badge.innerText = count;
+    totalEl.innerText = total.toLocaleString() + ' EGP';
+    document.getElementById('payAmount').innerText = total.toLocaleString() + ' EGP';
+
     if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div class="empty-cart-msg">
-                <i class="fa-solid fa-shopping-basket"></i>
+        container.innerHTML = `
+            <div class="h-100 d-flex flex-column align-items-center justify-content-center text-white-50">
+                <i class="fa-solid fa-cart-arrow-down fa-3x mb-3 opacity-50"></i>
                 <p>السلة فارغة</p>
             </div>`;
     } else {
-        cartItemsContainer.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                ${item.image ? `<img src="${item.image}">` : `<div style="width:60px;height:60px;background:#333;border-radius:8px;"></div>`}
-                <div class="cart-item-info">
-                    <div class="cart-item-title">${item.name}</div>
-                    <div class="cart-item-price">EGP ${item.price}</div>
-                    <div class="cart-item-controls">
-                        <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
-                        <span>${item.qty}</span>
-                        <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
-                        <button onclick="removeFromCart('${item.id}')" style="margin-right:auto;background:none;border:none;color:var(--secondary-color);cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+        container.innerHTML = cart.map(item => `
+            <div class="d-flex gap-3 mb-3 bg-dark p-2 rounded-3 align-items-center">
+                <img src="${item.image || 'placeholder.png'}" class="rounded-2" width="60" height="60" style="object-fit:cover">
+                <div class="flex-grow-1">
+                    <h6 class="mb-0 fw-bold small">${item.name}</h6>
+                    <div class="text-warning small fw-bold">${item.price} EGP</div>
                 </div>
+                <div class="d-flex align-items-center gap-2 bg-black rounded-pill px-2 py-1">
+                    <button class="btn btn-sm text-white p-0" onclick="updateQty('${item.id}', -1)">-</button>
+                    <span class="small fw-bold">${item.qty}</span>
+                    <button class="btn btn-sm text-white p-0" onclick="updateQty('${item.id}', 1)">+</button>
+                </div>
+                <button class="btn btn-sm text-danger" onclick="removeFromCart('${item.id}')"><i class="fa-solid fa-trash"></i></button>
             </div>
         `).join('');
     }
 }
 
-window.toggleCart = (forceOpen = null) => {
-    if (forceOpen === true) {
-        cartSidebar.classList.add('open');
-        cartOverlay.classList.add('open');
-    } else {
-        cartSidebar.classList.toggle('open');
-        cartOverlay.classList.toggle('open');
-    }
-};
-
-// --- CHECKOUT LOGIC ---
+// --- CHECKOUT ---
 window.checkout = () => {
     if (!currentUser) {
-        alert('يرجى تسجيل الدخول أولاً لإتمام الطلب');
-        loginWithGoogle();
+        bsOffcanvas.hide();
+        Toastify({ text: "يرجى تسجيل الدخول أولاً!", duration: 3000, style: { background: "#d63384" } }).showToast();
         return;
     }
     if (cart.length === 0) return;
 
-    toggleCart(false); // Close cart
-    document.getElementById('paymentModal').classList.remove('hidden');
+    bsOffcanvas.hide();
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
 };
 
-window.closeModal = (id) => {
-    document.getElementById(id).classList.add('hidden');
-};
-
-window.selectPayment = (type) => {
-    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-    if (type === 'card') {
-        document.querySelector('.payment-option:nth-child(1)').classList.add('selected');
-        document.getElementById('cardDetails').style.display = 'block';
-    } else {
-        document.querySelector('.payment-option:nth-child(2)').classList.add('selected');
-        document.getElementById('cardDetails').style.display = 'none';
-    }
-};
-
-// Handle Payment Submit
 document.getElementById('paymentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const phone = document.getElementById('userPhone').value;
-    const address = document.getElementById('userAddress').value;
-
-    // Simulate Processing
-    const btn = e.target.querySelector('button');
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> جاري المعالجة...';
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<div class="spinner-border spinner-border-sm"></div> جاري المعالجة...';
     btn.disabled = true;
 
     try {
-        // Save Order to Firestore
         await addDoc(collection(db, "orders"), {
             user_id: currentUser.uid,
             user_email: currentUser.email,
             user_name: currentUser.displayName,
             products: cart,
             total_price: cart.reduce((acc, item) => acc + (item.price * item.qty), 0),
-            phone: phone,
-            address: address,
+            phone: document.getElementById('userPhone').value,
+            address: document.getElementById('userAddress').value,
             status: 'pending',
             created_at: serverTimestamp(),
-            payment_method: document.querySelector('.payment-option.selected').innerText.trim()
+            payment_method: document.querySelector('input[name="payment"]:checked').value
         });
 
-        setTimeout(() => {
-            alert('تم استلام طلبك بنجاح! شكراً لتسوقك معنا.');
-            cart = [];
-            updateCartUI();
-            closeModal('paymentModal');
-            btn.innerHTML = 'تأكيد الدفع';
-            btn.disabled = false;
-        }, 2000);
+        // Close Modal manually using bootstrap API
+        const modalEl = document.getElementById('paymentModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        modalInstance.hide();
+
+        // Success
+        Swal.fire({
+            title: 'تم بنجاح!',
+            text: 'تم استلام طلبك وسنقوم بالتواصل معك قريباً.',
+            icon: 'success',
+            background: '#1a202e',
+            color: '#fff'
+        });
+
+        cart = [];
+        updateCartUI();
 
     } catch (error) {
-        console.error("Error creating order: ", error);
-        alert('حدث خطأ أثناء إرسال الطلب، يرجى المحاولة لاحقاً.');
-        btn.innerHTML = 'تأكيد الدفع';
+        console.error(error);
+        Toastify({ text: "حدث خطأ غير متوقع", style: { background: "#ff5f6d" } }).showToast();
+    } finally {
+        btn.innerHTML = originalText;
         btn.disabled = false;
     }
 });
-
-// INITIALIZE
-document.addEventListener('DOMContentLoaded', loadProducts);
