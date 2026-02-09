@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر ديزل كفر شكر</title>
+    <title>El Fager Store - متجر الفاجر</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,19 +16,40 @@
     <header class="main-header glass-effect">
         <div class="container header-container">
             <div class="logo">
-                <i class="fa-solid fa-store"></i>
-                <h1>ديزل كفر شكر</h1>
+                <i class="fa-solid fa-bolt"></i>
+                <h1>El Fager</h1>
             </div>
 
             <nav class="main-nav">
                 <a href="#home" class="active">الرئيسية</a>
                 <a href="#products">المنتجات</a>
-                <a href="#contact">تواصل معنا</a>
+                <a href="#offers">العروض</a>
             </nav>
 
-            <div class="cart-icon">
-                <i class="fa-solid fa-shopping-cart"></i>
-                <span class="cart-badge">0</span>
+            <div class="header-actions">
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="icon-btn">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+
+                <!-- Cart Icon -->
+                <div class="cart-icon" onclick="toggleCart()">
+                    <i class="fa-solid fa-shopping-bag"></i>
+                    <span id="cartBadge" class="cart-badge">0</span>
+                </div>
+
+                <!-- Auth Section -->
+                <div id="authSection">
+                    <button class="btn-login" onclick="loginWithGoogle()">
+                        <i class="fa-brands fa-google"></i> دخول
+                    </button>
+                </div>
+
+                <!-- User Profile (Hidden initially) -->
+                <div id="userProfile" class="user-profile hidden">
+                    <img id="userAvatar" src="" alt="User">
+                    <button onclick="logout()" class="btn-logout"><i class="fa-solid fa-sign-out-alt"></i></button>
+                </div>
             </div>
         </div>
     </header>
@@ -36,22 +57,38 @@
     <!-- Hero Section -->
     <section id="home" class="hero-section">
         <div class="hero-content">
-            <h1>أحدث الإلكترونيات بأفضل الأسعار</h1>
-            <p>تسوق الآن واحصل على عروض حصرية على الهواتف، اللابتوبات، والإكسسوارات.</p>
-            <a href="#products" class="btn-primary pulse-effect">تصفح المنتجات <i
-                    class="fa-solid fa-arrow-left"></i></a>
+            <span class="badge-new">وصل حديثاً 🔥</span>
+            <h1>التكنولوجيا بين يديك <br> <span class="highlight">بأفضل الأسعار</span></h1>
+            <p>تسوق أحدث الهواتف الذكية والإكسسوارات الأصلية مع ضمان حقيقي وخدمة ما بعد البيع المميزة.</p>
+            <div class="hero-btns">
+                <a href="#products" class="btn-primary pulse-effect">تصفح المنتجات <i
+                        class="fa-solid fa-arrow-left"></i></a>
+                <a href="#contact" class="btn-secondary">تواصل معنا</a>
+            </div>
         </div>
-        <div class="hero-shape"></div>
+        <div class="hero-image">
+            <!-- Decorative Elements -->
+            <div class="circle-bg"></div>
+            <img src="https://assets.stickpng.com/images/5cb0633d80f2cf201a4c3253.png" alt="iPhone 14 Pro"
+                class="floating-img">
+        </div>
     </section>
 
     <!-- Products Section -->
     <section id="products" class="products-section">
         <div class="container">
-            <h2 class="section-title">وصل حديثاً</h2>
+            <div class="section-header">
+                <h2 class="section-title">منتجاتنا المميزة</h2>
+                <div class="filters">
+                    <button class="filter-btn active">الكل</button>
+                    <button class="filter-btn">ايفون</button>
+                    <button class="filter-btn">سامسونج</button>
+                    <button class="filter-btn">اكسسوارات</button>
+                </div>
+            </div>
 
             <!-- Dynamic Products Container -->
             <div id="products-grid" class="products-grid">
-                <!-- Products will be loaded here from Firebase -->
                 <div class="loading-placeholder">
                     <i class="fa-solid fa-circle-notch fa-spin"></i>
                     <p>جاري تحميل المنتجات...</p>
@@ -60,15 +97,103 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <p>جميع الحقوق محفوظة &copy; 2024 متجر ديزل كفر شكر</p>
-            <div class="social-links">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>سلة المشتريات <span id="cartCount">(0)</span></h3>
+            <button onclick="toggleCart()" class="close-btn"><i class="fa-solid fa-times"></i></button>
+        </div>
+
+        <div id="cartItems" class="cart-items">
+            <!-- Items injected here by JS -->
+            <div class="empty-cart-msg">
+                <i class="fa-solid fa-shopping-basket"></i>
+                <p>السلة فارغة حالياً</p>
+                <button onclick="toggleCart()" class="btn-secondary">تصفح المنتجات</button>
             </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>المجموع:</span>
+                <span id="cartTotal">0 EGP</span>
+            </div>
+            <button onclick="checkout()" class="btn-checkout">إتمام الطلب <i
+                    class="fa-solid fa-credit-card"></i></button>
+        </div>
+    </div>
+    <div id="cartOverlay" class="cart-overlay" onclick="toggleCart()"></div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h3>إتمام الدفع</h3>
+                <button onclick="closeModal('paymentModal')" class="close-btn"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <label>طريقة الدفع</label>
+                    <div class="payment-methods">
+                        <div class="payment-option selected" onclick="selectPayment('card')">
+                            <i class="fa-brands fa-cc-visa"></i>
+                            <span>بطاقة بنكية</span>
+                        </div>
+                        <div class="payment-option" onclick="selectPayment('cod')">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <span>دفع عند الاستلام</span>
+                        </div>
+                    </div>
+
+                    <div id="cardDetails" class="card-details">
+                        <div class="input-group">
+                            <label>رقم البطاقة</label>
+                            <input type="text" placeholder="0000 0000 0000 0000">
+                        </div>
+                        <div class="row">
+                            <div class="input-group">
+                                <label>تاريخ الانتهاء</label>
+                                <input type="text" placeholder="MM/YY">
+                            </div>
+                            <div class="input-group">
+                                <label>CVV</label>
+                                <input type="text" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" id="userPhone" placeholder="01xxxxxxxxx" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>العنوان</label>
+                        <input type="text" id="userAddress" placeholder="المدينة، الشارع..." required>
+                    </div>
+
+                    <button type="submit" class="btn-pay">تأكيد الدفع (<span id="payAmount">0</span>)</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>El Fager</h2>
+                    <p>وجهتك الأولى للإلكترونيات في مصر</p>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <p class="copyright">جميع الحقوق محفوظة &copy; 2024</p>
         </div>
     </footer>
 
